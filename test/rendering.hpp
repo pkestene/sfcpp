@@ -61,6 +61,8 @@ void renderBetaOmega2DLocalSymbols(std::string filename, size_t squareDepth,
                                    size_t curveDepth);
 void renderGosper2DLocalSymbols(std::string filename, size_t squareDepth,
                                 size_t curveDepth);
+void renderMorton2D(std::string filename, size_t squareDepth, size_t curveDepth);
+void renderMorton2DAdaptive(std::string filename, std::string treeString);
 void renderMorton2DGlobalSymbols(std::string filename, size_t squareDepth,
                                  size_t curveDepth);
 

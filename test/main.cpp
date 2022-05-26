@@ -492,11 +492,11 @@ void drawCurve() {
 
 int main() {
   // testPoissonSolvers3();
-  /*const double numSamples = 5000000;
-  test::createPeanoDimPerformancePlots(numSamples);
-  test::createPeanoDepthPerformancePlots(numSamples);
-  test::create2DPerformancePlots(numSamples);
-  test::createStatePerformancePlots(numSamples);*/
+  // const double numSamples = 5000000;
+  // test::createPeanoDimPerformancePlots(numSamples);
+  // test::createPeanoDepthPerformancePlots(numSamples);
+  // test::create2DPerformancePlots(numSamples);
+  // test::createStatePerformancePlots(numSamples);
 
   try {
     // bool result = testConvergence(sfc::CurveSpecification::getSierpinskiCurveSpecification(7),
@@ -505,9 +505,9 @@ int main() {
     // bool result = testConvergence(sfc::CurveSpecification::getBetaOmegaCurveSpecification(), 10);
     // bool result = testConvergence(sfc::CurveSpecification::getCustomCurveSpecification1());
     // std::cout << "Convergence result: " << result << "\n";
-    computeDeformationSpecs(std::make_shared<sfc::CurveInformation>(
-                                sfc::CurveSpecification::getSierpinskiCurveSpecification(5)),
-                            16);
+    // computeDeformationSpecs(std::make_shared<sfc::CurveInformation>(
+    //                             sfc::CurveSpecification::getSierpinskiCurveSpecification(5)),
+    //                         16);
     // testCubes();
     /*{ // initialize stack memory for debugging
         size_t data[10000] = {0};
@@ -518,51 +518,45 @@ int main() {
         std::cout << myvar << "\n";
       }*/
     // drawCurve();
-    for (size_t depth = 0; depth <= 3; ++depth) {
+    for (size_t depth = 0; depth <= 4; ++depth) {
       std::string dstr = strings::toString(depth);
-      // test::renderHilbert2D("h-2d-" + dstr + "-gr.tex",
-      //                      depth, depth);
+      // test::renderHilbert2D("h-2d-" + dstr + "-gr.tex", depth, depth);
+      test::renderMorton2D("m-2d-" + dstr + "-gr.tex", depth, depth);
       // test::renderCustom1("c-2d-" + dstr + "-grn.tex", depth, depth);
       // test::renderHilbert2DLocalCorners("h-2d-" + dstr + "+-grc.tex", depth,
       //                                   depth + 1);
     }
-    /*for (size_t depth = 0; depth <= 2; ++depth) {
+    // for (size_t depth = 0; depth <= 2; ++depth) {
+    //   std::string dstr = strings::toString(depth);
+    //   test::renderHilbert3D("h-3d-" + dstr + "-grb.tex", depth, true);
+    // }
+    for (size_t depth = 0; depth <= 4; ++depth) {
       std::string dstr = strings::toString(depth);
-      test::renderHilbert3D("h-3d-" + dstr + "-grb.tex", depth, true);
-    }
-    for (size_t depth = 0; depth <= 3; ++depth) {
-      std::string dstr = strings::toString(depth);
-      test::renderHilbert2DGlobalSymbols(
-          "h-2d-" + strings::toString(depth) + "+-grsg.tex", depth, depth + 1);
-      test::renderHilbert2DLocalSymbols(
-          "h-2d-" + strings::toString(depth) + "+-grsl.tex", depth, depth + 1);
-      test::renderHilbert2DGlobalSymbols(
-          "h-2d-" + strings::toString(depth) + "-grsg.tex", depth, depth);
-      test::renderHilbert2DLocalSymbols(
-          "h-2d-" + strings::toString(depth) + "-grsl.tex", depth, depth);
-      test::renderPeano2DGlobalSymbols(
-          "p3-2d-" + strings::toString(depth) + "-grsg.tex", depth, depth);
-      test::renderHilbert2DOrder(
-          "h-2d-" + strings::toString(depth) + "-gro.tex", depth);
-      test::renderHilbert2DOrder(
-          "h-2d-" + strings::toString(depth) + "-gro4.tex", depth, 4,
-          std::max(1ul, depth));
-      test::renderPeano2DLocalSymbols("p3-2d-" + dstr + "-grsl.tex", depth,
-                                      depth);
-      test::renderBetaOmega2DLocalSymbols("b-2d-" + dstr + "+-grsl.tex", depth,
-                                          depth + 1);
-      test::renderGosper2DLocalSymbols("g-2d-" + dstr + "-grsl.tex", depth,
-                                       depth);
-      test::renderMorton2DGlobalSymbols("m-2d-" + dstr + "-grsg.tex", depth,
-                                        depth);
-      test::renderHilbert3D("h-3d-" + dstr + "-gr.tex", depth, false);
+      // test::renderHilbert2DGlobalSymbols("h-2d-" + strings::toString(depth) + "+-grsg.tex",
+      // depth,
+      //                                    depth + 1);
+      // test::renderHilbert2DLocalSymbols("h-2d-" + strings::toString(depth) + "+-grsl.tex", depth,
+      //                                   depth + 1);
+      // test::renderHilbert2DGlobalSymbols("h-2d-" + strings::toString(depth) + "-grsg.tex", depth,
+      //                                    depth);
+      // test::renderHilbert2DLocalSymbols("h-2d-" + strings::toString(depth) + "-grsl.tex", depth,
+      //                                   depth);
+      // test::renderPeano2DGlobalSymbols("p3-2d-" + strings::toString(depth) + "-grsg.tex", depth,
+      //                                  depth);
+      // test::renderHilbert2DOrder("h-2d-" + strings::toString(depth) + "-gro.tex", depth);
+      // test::renderHilbert2DOrder("h-2d-" + strings::toString(depth) + "-gro4.tex", depth, 4,
+      //                            std::max(1ul, depth));
+      // test::renderPeano2DLocalSymbols("p3-2d-" + dstr + "-grsl.tex", depth, depth);
+      // test::renderBetaOmega2DLocalSymbols("b-2d-" + dstr + "+-grsl.tex", depth, depth + 1);
+      // test::renderGosper2DLocalSymbols("g-2d-" + dstr + "-grsl.tex", depth, depth);
+      // test::renderMorton2DGlobalSymbols("m-2d-" + dstr + "-grsg.tex", depth, depth);
+      // test::renderHilbert3D("h-3d-" + dstr + "-gr.tex", depth, false);
     }
 
-    for (size_t depth = 0; depth <= 6; ++depth) {
-      std::string dstr = strings::toString(depth);
-      test::renderSierpinski2DLocalSymbols("s-2d-" + dstr + "-grsl.tex", depth,
-                                           depth);
-    }*/
+    // for (size_t depth = 0; depth <= 6; ++depth) {
+    //   std::string dstr = strings::toString(depth);
+    //   test::renderSierpinski2DLocalSymbols("s-2d-" + dstr + "-grsl.tex", depth, depth);
+    // }
 
     /*for (size_t d = 2; d <= 20; ++d) {
       auto spec = sfc::CurveSpecification::getSierpinskiCurveSpecification(d);
@@ -570,12 +564,16 @@ int main() {
     }*/
 
     // test::renderHilbert2DTree("h-2d-2-tree.tex", 2);
-    // test::renderHilbert2DTree("h-2d-3-tree.tex", 3);
+    test::renderHilbert2DTree("h-2d-3-tree.tex", 3);
     // test::renderHilbert2DTree("h-2d-4-tree.tex", 4);
 
-    /*test::renderHilbert2DAdaptive("h-2d-a-gr.tex",
-                                  "11010100001000010000110000001000011000000011"
-                                  "01000010000100001100000000000");*/
+    // test::renderHilbert2DAdaptive("h-2d-a-gr.tex",
+    //                               "11010100001000010000110000001000011000000011"
+    //                               "01000010000100001100000000000");
+
+    test::renderMorton2DAdaptive("m-2d-a-gr.tex",
+                                 "11010100001000010000110000001000011000000011"
+                                 "01000010000100001100000000000");
 
   } catch (std::runtime_error &error) {
     std::cout << "Exception: " << error.what() << "\n";

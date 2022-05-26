@@ -95,26 +95,20 @@ void renderCurveWithStateSymbols(
       [&](sfc::SpacetreeNode const &node) { return symbolFunc(node.state); });
 }
 
-void renderHilbert2DGlobalSymbols(std::string filename, size_t squareDepth,
-                                  size_t curveDepth) {
-  auto spec = sfc::KDCurveSpecification::getHilbertCurveSpecification(2)
-                  ->getCurveSpecification();
-  renderCurveWithStateSymbols(
-      filename, squareDepth, curveDepth, spec,
-      [](size_t state) { return hilbert2DSymbols[state]; });
+void renderHilbert2DGlobalSymbols(std::string filename, size_t squareDepth, size_t curveDepth) {
+  auto spec = sfc::KDCurveSpecification::getHilbertCurveSpecification(2)->getCurveSpecification();
+  renderCurveWithStateSymbols(filename, squareDepth, curveDepth, spec,
+                              [](size_t state) { return hilbert2DSymbols[state]; });
 }
 
 void renderHilbert2DAdaptive(std::string filename, std::string treeString) {
-  auto spec = sfc::KDCurveSpecification::getHilbertCurveSpecification(2)
-                  ->getCurveSpecification();
+  auto spec = sfc::KDCurveSpecification::getHilbertCurveSpecification(2)->getCurveSpecification();
   double factor = 5.0;
-  std::shared_ptr<latex::tikz::TikzPicture> picture(
-      new latex::tikz::TikzPicture());
+  std::shared_ptr<latex::tikz::TikzPicture> picture(new latex::tikz::TikzPicture());
   auto worldSystem = picture->getWorldSystem();
-  auto perspectiveSystem = worldSystem->createChild(
-      geo::linearTransform(1, 0, 0.1, 0, 1, 0, 0, 0, -1));
-  auto unitSystem = perspectiveSystem->createChild(
-      geo::scaleTransform(factor, factor, factor));
+  auto perspectiveSystem =
+      worldSystem->createChild(geo::linearTransform(1, 0, 0.1, 0, 1, 0, 0, 0, -1));
+  auto unitSystem = perspectiveSystem->createChild(geo::scaleTransform(factor, factor, factor));
 
   auto container = std::make_shared<latex::tikz::TikzElementContainer>();
   picture->addElement(container);
@@ -123,11 +117,10 @@ void renderHilbert2DAdaptive(std::string filename, std::string treeString) {
 
   auto renderer = std::make_shared<sfc::CurveRenderer>(spec, info);
   renderer->setTreeStructure(treeString);
-  container->addElement(renderer->renderBoundaries(
-      latex::tikz::TikzElementConfiguration(img::Color::Gray)));
-
   container->addElement(
-      renderer->renderCurve(test::startColor, test::endColor));
+      renderer->renderBoundaries(latex::tikz::TikzElementConfiguration(img::Color::Gray)));
+
+  container->addElement(renderer->renderCurve(test::startColor, test::endColor));
 
   container->setCoordinateSystem(unitSystem);
 
@@ -380,29 +373,59 @@ void renderGosper2DLocalSymbols(std::string filename, size_t squareDepth,
                          latex::tikz::TikzFontsize::large * 2.5);
 }
 
-void renderMorton2DGlobalSymbols(std::string filename, size_t squareDepth,
-                                 size_t curveDepth) {
-  auto spec = sfc::KDCurveSpecification::getMortonCurveSpecification(2, 2)
-                  ->getCurveSpecification();
+void renderMorton2D(std::string filename, size_t squareDepth, size_t curveDepth) {
+  auto spec =
+      sfc::KDCurveSpecification::getMortonCurveSpecification(2)->getLocalCurveSpecification();
+
+  renderCurveWithStateSymbols(filename, squareDepth, curveDepth, spec, [](size_t) { return ""; });
+}
+
+void renderMorton2DGlobalSymbols(std::string filename, size_t squareDepth, size_t curveDepth) {
+  auto spec = sfc::KDCurveSpecification::getMortonCurveSpecification(2, 2)->getCurveSpecification();
 
   renderCurveWithStateSymbols(filename, squareDepth, curveDepth, spec,
                               [](size_t) { return morton2DGlobalSymbol; });
 }
 
-void renderCustom1(std::string filename, size_t squareDepth,
-                   size_t curveDepth) {
+void renderMorton2DAdaptive(std::string filename, std::string treeString) {
+  auto spec = sfc::KDCurveSpecification::getMortonCurveSpecification(2, 2)->getCurveSpecification();
+  double factor = 5.0;
+  std::shared_ptr<latex::tikz::TikzPicture> picture(new latex::tikz::TikzPicture());
+  auto worldSystem = picture->getWorldSystem();
+  auto perspectiveSystem =
+      worldSystem->createChild(geo::linearTransform(1, 0, 0.1, 0, 1, 0, 0, 0, -1));
+  auto unitSystem = perspectiveSystem->createChild(geo::scaleTransform(factor, factor, factor));
+
+  auto container = std::make_shared<latex::tikz::TikzElementContainer>();
+  picture->addElement(container);
+
+  auto info = std::make_shared<sfc::CurveInformation>(spec);
+
+  auto renderer = std::make_shared<sfc::CurveRenderer>(spec, info);
+  renderer->setTreeStructure(treeString);
+  container->addElement(
+      renderer->renderBoundaries(latex::tikz::TikzElementConfiguration(img::Color::Gray)));
+
+  container->addElement(renderer->renderCurve(test::startColor, test::endColor));
+
+  container->setCoordinateSystem(unitSystem);
+
+  latex::LatexDocument document;
+  document.addElement(picture);
+  document.saveAndCompile("TexCode/" + filename);
+}
+
+void renderCustom1(std::string filename, size_t squareDepth, size_t curveDepth) {
   auto spec = sfc::CurveSpecification::getCustomCurveSpecification1();
   /*renderCurveWithStateSymbols(filename, squareDepth, curveDepth, spec,
                               [](size_t) { return ""; });*/
 
   double factor = 5.0;
-  std::shared_ptr<latex::tikz::TikzPicture> picture(
-      new latex::tikz::TikzPicture());
+  std::shared_ptr<latex::tikz::TikzPicture> picture(new latex::tikz::TikzPicture());
   auto worldSystem = picture->getWorldSystem();
-  auto perspectiveSystem = worldSystem->createChild(
-      geo::linearTransform(1, 0, 0.1, 0, 1, 0, 0, 0, -1));
-  auto unitSystem = perspectiveSystem->createChild(
-      geo::scaleTransform(factor, factor, factor));
+  auto perspectiveSystem =
+      worldSystem->createChild(geo::linearTransform(1, 0, 0.1, 0, 1, 0, 0, 0, -1));
+  auto unitSystem = perspectiveSystem->createChild(geo::scaleTransform(factor, factor, factor));
 
   auto container = std::make_shared<latex::tikz::TikzElementContainer>();
   picture->addElement(container);
@@ -415,8 +438,7 @@ void renderCustom1(std::string filename, size_t squareDepth,
       latex::tikz::TikzElementConfiguration(img::Color::Gray)));*/
 
   renderer->setTreeStructure(curveDepth);
-  container->addElement(
-      renderer->renderCurve(test::startColor, test::endColor));
+  container->addElement(renderer->renderCurve(test::startColor, test::endColor));
 
   container->setCoordinateSystem(unitSystem);
 
