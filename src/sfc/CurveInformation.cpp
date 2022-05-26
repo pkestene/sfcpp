@@ -13,27 +13,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-
-
 #include "CurveInformation.hpp"
 
+#include <data/MultidimArray.hpp>
 #include <files/files.hpp>
+#include <iostream>
 #include <math/CompletionAlgorithm.hpp>
 #include <math/NatSet.hpp>
-#include <strings/strings.hpp>
-
-#include <iostream>
 #include <queue>
+#include <strings/strings.hpp>
 
 namespace sfcpp {
 namespace sfc {
 
 static const size_t UNDEFINED = static_cast<size_t>(-1);
 
-bool CurveInformation::tryFindAdjacentFacets(GeometricTreeNode& first,
-                                             GeometricTreeNode& second,
-                                             size_t& firstFacet,
-                                             size_t& secondFacet) {
+bool CurveInformation::tryFindAdjacentFacets(GeometricTreeNode& first, GeometricTreeNode& second,
+                                             size_t& firstFacet, size_t& secondFacet) {
   double eps = 1e-9;  // TODO(holzmudd): adjust
   double sqeps = eps * eps;
 
@@ -42,9 +38,7 @@ bool CurveInformation::tryFindAdjacentFacets(GeometricTreeNode& first,
 
   for (int firstCol = 0; firstCol < first.points.cols(); ++firstCol) {
     for (int secondCol = 0; secondCol < second.points.cols(); ++secondCol) {
-      double sqnorm =
-          (first.points.col(firstCol) - second.points.col(secondCol))
-              .squaredNorm();
+      double sqnorm = (first.points.col(firstCol) - second.points.col(secondCol)).squaredNorm();
 
       if (sqnorm < sqeps) {
         firstVertexSet.insert(firstCol);
@@ -53,18 +47,15 @@ bool CurveInformation::tryFindAdjacentFacets(GeometricTreeNode& first,
     }
   }
 
-  return polytopeStructures[first.state]->tryFindFace(
-             spec->d - 1, firstVertexSet, firstFacet) &&
-         polytopeStructures[second.state]->tryFindFace(
-             spec->d - 1, secondVertexSet, secondFacet);
+  return polytopeStructures[first.state]->tryFindFace(spec->d - 1, firstVertexSet, firstFacet) &&
+         polytopeStructures[second.state]->tryFindFace(spec->d - 1, secondVertexSet, secondFacet);
 }
 
 struct TreeNodeExample {
   size_t state = 0;
   Eigen::MatrixXd points;
 
-  friend bool operator==(TreeNodeExample const& first,
-                         TreeNodeExample const& second) {
+  friend bool operator==(TreeNodeExample const& first, TreeNodeExample const& second) {
     return first.state == second.state;
   }
 };
@@ -76,8 +67,7 @@ class TreeNodeStateHash {
 
 class TreeNodeStateEquals {
  public:
-  bool operator()(GeometricTreeNode const& first,
-                  GeometricTreeNode const& second) const {
+  bool operator()(GeometricTreeNode const& first, GeometricTreeNode const& second) const {
     return first.state == second.state;
   }
 };
@@ -88,26 +78,17 @@ struct TreeNodePairExample {
   size_t firstFacet = 0;
   size_t secondFacet = 0;
 
-  TreeNodePairExample(GeometricTreeNode const& first,
-                      GeometricTreeNode const& second, size_t firstFace,
-                      size_t secondFace)
-      : first(first),
-        second(second),
-        firstFacet(firstFace),
-        secondFacet(secondFace) {}
+  TreeNodePairExample(GeometricTreeNode const& first, GeometricTreeNode const& second,
+                      size_t firstFace, size_t secondFace)
+      : first(first), second(second), firstFacet(firstFace), secondFacet(secondFace) {}
 
   TreeNodePairExample() {}
 
-  friend bool operator==(TreeNodePairExample const& first,
-                         TreeNodePairExample const& second) {
-    return (first.first.state == second.first.state &&
-            first.second.state == second.second.state &&
-            first.firstFacet == second.firstFacet &&
-            first.secondFacet == second.secondFacet) ||
-           (first.first.state == second.second.state &&
-            first.second.state == second.first.state &&
-            first.firstFacet == second.secondFacet &&
-            first.secondFacet == second.firstFacet);
+  friend bool operator==(TreeNodePairExample const& first, TreeNodePairExample const& second) {
+    return (first.first.state == second.first.state && first.second.state == second.second.state &&
+            first.firstFacet == second.firstFacet && first.secondFacet == second.secondFacet) ||
+           (first.first.state == second.second.state && first.second.state == second.first.state &&
+            first.firstFacet == second.secondFacet && first.secondFacet == second.firstFacet);
   }
 };
 
@@ -117,8 +98,7 @@ class TreeNodePairExampleHash {
     size_t someNumber = 1234567;
     // swapping roles of first and second must make no difference
     // => use commutative operation "+"
-    return ex.first.state + ex.second.state +
-           someNumber * (ex.firstFacet + ex.secondFacet);
+    return ex.first.state + ex.second.state + someNumber * (ex.firstFacet + ex.secondFacet);
   }
 };
 
@@ -130,20 +110,16 @@ void CurveInformation::computeInformation() {
   // loop?) -> pairs might occur from same parent or other neighboring pairs
 
   std::vector<bool> visitedStates(spec->getNumStates(), false);
-  std::vector<std::vector<bool>> visitedStatePairs(spec->getNumStates(),
-                                                   visitedStates);
+  std::vector<std::vector<bool>> visitedStatePairs(spec->getNumStates(), visitedStates);
 
-  math::CompletionAlgorithm<GeometricTreeNode, TreeNodeStateHash,
-                            TreeNodeStateEquals>
-      nodeAlg(getRootNode());
-  math::CompletionAlgorithm<TreeNodePairExample, TreeNodePairExampleHash>
-      pairAlg;
+  math::CompletionAlgorithm<GeometricTreeNode, TreeNodeStateHash, TreeNodeStateEquals> nodeAlg(
+      getRootNode());
+  math::CompletionAlgorithm<TreeNodePairExample, TreeNodePairExampleHash> pairAlg;
 
   // compute the polytope structures beforehand because we need them
   nodeAlg.computeSingleCompletion([&](GeometricTreeNode const& node) {
     stateReachability[node.state] = true;
-    polytopeStructures[node.state] =
-        geo::ConvexPolytope::convexHull(node.points);
+    polytopeStructures[node.state] = geo::ConvexPolytope::convexHull(node.points);
     // std::cout << "Polytope structure: \n" << *polytopeStructures[node.state]
     // << "\n\n";
     for (auto& child : getChildren(node)) {
@@ -162,8 +138,7 @@ void CurveInformation::computeInformation() {
 
         // for each pair of children of the current node, look if they share a
         // common facet
-        bool success = tryFindAdjacentFacets(children[i], children[j],
-                                             firstFacet, secondFacet);
+        bool success = tryFindAdjacentFacets(children[i], children[j], firstFacet, secondFacet);
         // std::cout << "firstFacet, secondFacet: " << firstFacet << ", " <<
         // secondFacet << "\n";
         if (success) {
@@ -171,8 +146,7 @@ void CurveInformation::computeInformation() {
           // pair for pairAlg
           neighborTable.at(i, node.state, firstFacet) = j;
           neighborTable.at(j, node.state, secondFacet) = i;
-          pairAlg.add(TreeNodePairExample(children[i], children[j], firstFacet,
-                                          secondFacet));
+          pairAlg.add(TreeNodePairExample(children[i], children[j], firstFacet, secondFacet));
         }
       }
     }
@@ -190,34 +164,28 @@ void CurveInformation::computeInformation() {
         size_t secondFacet;
 
         // look if the pair shares a common facet
-        bool success = tryFindAdjacentFacets(
-            firstChildren[i], secondChildren[j], firstFacet, secondFacet);
+        bool success =
+            tryFindAdjacentFacets(firstChildren[i], secondChildren[j], firstFacet, secondFacet);
         if (success) {
           // if yes, compute the entries for the tables and add the newly found
           // pair to pairAlg
-          if (opponentTable.containsNotDefault(i, pair.first.state,
-                                               pair.second.state, firstFacet) &&
-              opponentTable.at(i, pair.first.state, pair.second.state,
-                               firstFacet) != j) {
+          if (opponentTable.containsNotDefault(i, pair.first.state, pair.second.state,
+                                               firstFacet) &&
+              opponentTable.at(i, pair.first.state, pair.second.state, firstFacet) != j) {
             opponentTableInconsistent = true;
           }
-          opponentTable.at(i, pair.first.state, pair.second.state, firstFacet) =
-              j;
+          opponentTable.at(i, pair.first.state, pair.second.state, firstFacet) = j;
 
-          if (opponentTable.containsNotDefault(j, pair.second.state,
-                                               pair.first.state, secondFacet) &&
-              opponentTable.at(j, pair.second.state, pair.first.state,
-                               secondFacet) != i) {
+          if (opponentTable.containsNotDefault(j, pair.second.state, pair.first.state,
+                                               secondFacet) &&
+              opponentTable.at(j, pair.second.state, pair.first.state, secondFacet) != i) {
             opponentTableInconsistent = true;
           }
-          opponentTable.at(j, pair.second.state, pair.first.state,
-                           secondFacet) = i;
-          parentFacetTable.at(i, pair.first.state, firstFacet) =
-              pair.firstFacet;
-          parentFacetTable.at(j, pair.second.state, secondFacet) =
-              pair.secondFacet;
-          pairAlg.add(TreeNodePairExample(firstChildren[i], secondChildren[j],
-                                          firstFacet, secondFacet));
+          opponentTable.at(j, pair.second.state, pair.first.state, secondFacet) = i;
+          parentFacetTable.at(i, pair.first.state, firstFacet) = pair.firstFacet;
+          parentFacetTable.at(j, pair.second.state, secondFacet) = pair.secondFacet;
+          pairAlg.add(
+              TreeNodePairExample(firstChildren[i], secondChildren[j], firstFacet, secondFacet));
         }
       }
     }
@@ -253,21 +221,18 @@ CurveInformation::CurveInformation(std::shared_ptr<CurveSpecification> spec)
       hasPalindromeProperty(true) {
   computeInformation();
   if (opponentTableInconsistent) {
-    std::cout
-        << "CurveInformation::CurveInformation(): ATTENTION: opponentTable "
-           "is inconsistent!\n";
+    std::cout << "CurveInformation::CurveInformation(): ATTENTION: opponentTable "
+                 "is inconsistent!\n";
   } else {
     if (hasPalindromeProperty) {
       std::cout << "The curve has the modified palindrome property.\n";
     } else {
-      std::cout
-          << "The curve does not have the modified palindrome property.\n";
+      std::cout << "The curve does not have the modified palindrome property.\n";
     }
   }
 }
 
-std::shared_ptr<geo::ConvexPolytope> CurveInformation::getPolytopeForState(
-    size_t state) const {
+std::shared_ptr<geo::ConvexPolytope> CurveInformation::getPolytopeForState(size_t state) const {
   return polytopeStructures[state];
 }
 
@@ -275,16 +240,14 @@ GeometricTreeNode CurveInformation::getRootNode() const {
   return GeometricTreeNode(0, spec->rootPoints);
 }
 
-std::vector<GeometricTreeNode> CurveInformation::getChildren(
-    const GeometricTreeNode& node) const {
+std::vector<GeometricTreeNode> CurveInformation::getChildren(const GeometricTreeNode& node) const {
   std::vector<GeometricTreeNode> result(spec->getNumChildren());
   // TODO: use this method in renderer?
 
   for (size_t i = 0; i < result.size(); ++i) {
     size_t nextState = spec->grammar[node.state][i];
 
-    result[i] = GeometricTreeNode(
-        nextState, node.points * spec->transitionMats[node.state][i]);
+    result[i] = GeometricTreeNode(nextState, node.points * spec->transitionMats[node.state][i]);
   }
 
   return result;
@@ -304,24 +267,20 @@ void CurveInformation::saveTableDefinitions(std::string filename) {
 
   // TODO: pStateTable does only make sense if grammar has group structure...
 
-  std::string result =
-      pStateTable.getCppArrayDeclaration("pStateTable", "size_t") + "\n\n" +
-      cStateTable.getCppArrayDeclaration("cStateTable", "size_t") + "\n\n" +
-      neighborTable.getCppArrayDeclaration("nTable", "size_t") + "\n\n" +
-      opponentTable.getCppArrayDeclaration("oTable", "size_t") + "\n\n" +
-      parentFacetTable.getCppArrayDeclaration("pFacetTable", "size_t") + "\n";
+  std::string result = pStateTable.getCppArrayDeclaration("pStateTable", "size_t") + "\n\n" +
+                       cStateTable.getCppArrayDeclaration("cStateTable", "size_t") + "\n\n" +
+                       neighborTable.getCppArrayDeclaration("nTable", "size_t") + "\n\n" +
+                       opponentTable.getCppArrayDeclaration("oTable", "size_t") + "\n\n" +
+                       parentFacetTable.getCppArrayDeclaration("pFacetTable", "size_t") + "\n";
 
   files::writeToFile(filename, result);
 }
 
-std::ostream& operator<<(std::ostream& stream,
-                         CurveInformation const& curveInfo) {
+std::ostream& operator<<(std::ostream& stream, CurveInformation const& curveInfo) {
   stream << "neighborTable: \n"
-         << strings::toString(curveInfo.neighborTable, "\n\n", "\n", ", ")
-         << "\n\n\n";
+         << strings::toString(curveInfo.neighborTable, "\n\n", "\n", ", ") << "\n\n\n";
   stream << "opponentTable: \n"
-         << strings::toString(curveInfo.opponentTable, "\n--------\n", "\n\n",
-                              "\n", ", ")
+         << strings::toString(curveInfo.opponentTable, "\n--------\n", "\n\n", "\n", ", ")
          << "\n\n\n\n";
   stream << "parentFacetTable: \n"
          << strings::toString(curveInfo.parentFacetTable, "\n\n", "\n", ", ");

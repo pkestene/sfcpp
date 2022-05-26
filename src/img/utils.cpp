@@ -37,8 +37,8 @@ ImagePtr<int32_t> watershedTransform(const ImagePtr<cv::Vec3b>& img,
 ImagePtr<float> distanceTransform(ImagePtr<bool> const& img) {
   ImagePtr<float> result = createImagePtr<float>();
 
-  cv::distanceTransform(img->data, result->data, CV_DIST_L2,
-                        CV_DIST_MASK_PRECISE);
+  cv::distanceTransform(img->data, result->data, cv::DistanceTypes::DIST_L2,
+                        cv::DistanceTransformMasks::DIST_MASK_PRECISE);
 
   return result;
 }
@@ -73,13 +73,13 @@ int round(double value) { return static_cast<int>(value + 0.5); }
 
 ImagePtr<cv::Vec3b> gray2BGR(const ImagePtr<uint8_t>& imgPtr) {
   auto result = createImagePtr<cv::Vec3b>();
-  cv::cvtColor(imgPtr->data, result->data, CV_GRAY2BGR);
+  cv::cvtColor(imgPtr->data, result->data, cv::ColorConversionCodes::COLOR_GRAY2BGR);
   return result;
 }
 
 ImagePtr<uint8_t> BGR2Gray(const ImagePtr<uint8_t>& imgPtr) {
   auto result = createImagePtr<uint8_t>();
-  cv::cvtColor(imgPtr->data, result->data, CV_BGR2GRAY);
+  cv::cvtColor(imgPtr->data, result->data, cv::ColorConversionCodes::COLOR_BGR2GRAY);
   return result;
 }
 

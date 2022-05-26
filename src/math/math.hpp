@@ -13,14 +13,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-
-
 #ifndef UTILS_MATH_MATH_HPP_
 #define UTILS_MATH_MATH_HPP_
 
 #include <cmath>
 #include <cstddef>
 #include <functional>
+#include <stdexcept>
 #include <vector>
 
 namespace sfcpp {
@@ -117,7 +116,7 @@ template <typename Func, typename In, typename Out = In, typename Comp = std::le
 In argmin(Func const &func, std::vector<In> const &candidates) {
   return candidates[argminIdx<Func, In, Out, Comp>(func, candidates)];
 }
-}
-}
+}  // namespace math
+}  // namespace sfcpp
 
 #endif /* UTILS_MATH_MATH_HPP_ */
