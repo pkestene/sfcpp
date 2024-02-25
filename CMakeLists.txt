@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.13)
 project(sfcpp CXX)
 
+# always export compile commands database
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 option(BUILD_IMG "" ON)
 option(BUILD_SFC "" ON)
 option(BUILD_TEST "" ON)

@@ -34,3 +34,4 @@ Release
 *.so
 *.jar
 *.pydevproject
+compile_commands.json
